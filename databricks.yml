@@ -2,18 +2,15 @@
 # See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
 bundle:
   name: dab_project
-  uuid: 06b043a7-381b-4a56-8a92-8d89a5d4165c
 
 include:
   - resources/*.yml
-  - resources/*/*.yml
 
-# Variable declarations. These variables are assigned in the dev/prod targets below.
 variables:
   catalog:
-    description: The catalog to use
-  schema:
-    description: The schema to use
+    default: "citibike_dev"
+  dev_flag:
+    default: true
 
 targets:
   dev:
@@ -24,19 +21,38 @@ targets:
     mode: development
     default: true
     workspace:
-      host: https://adb-7405610071104341.1.azuredatabricks.net
+      host: https://adb-7405617355437904.4.azuredatabricks.net
+
+  test:
+    mode: production
     variables:
-      catalog: dbw_dev_useast
-      schema: dev
+      catalog:
+        default: "citibike_test"
+      dev_flag:
+        default: false
+    presets:
+      name_prefix: '[testing] '
+    workspace:
+      host: https://adb-7405607101792283.3.azuredatabricks.net
+      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
+    permissions:
+      - service_principal_name: ghost9420_gmail.com#ext#@ghost9420gmail.onmicrosoft.com # update with your service principal name
+        level: CAN_MANAGE
+    run_as:
+      service_principal_name: ghost9420_gmail.com#ext#@ghost9420gmail.onmicrosoft.com # update with your service principal name
+
   prod:
     mode: production
-    workspace:
-      host: https://adb-7405617355437904.4.azuredatabricks.net
-      # We explicitly deploy to /Workspace/Users/ghost9420_gmail.com#ext#@ghost9420gmail.onmicrosoft.com to make sure we only have a single copy.
-      root_path: /Workspace/Users/ghost9420_gmail.com#ext#@ghost9420gmail.onmicrosoft.com/.bundle/${bundle.name}/${bundle.target}
     variables:
-      catalog: dbw_dev_useast
-      schema: prod
+      catalog:
+        default: "citibike_prod"
+      dev_flag:
+        default: false
+    workspace:
+      host: https://adb-7405610071104341.1.azuredatabricks.net
+      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
     permissions:
-      - user_name: ghost9420_gmail.com#ext#@ghost9420gmail.onmicrosoft.com
+      - service_principal_name: ghost9420_gmail.com#ext#@ghost9420gmail.onmicrosoft.com # update with your service principal name
         level: CAN_MANAGE
+    run_as:
+      service_principal_name: ghost9420_gmail.com#ext#@ghost9420gmail.onmicrosoft.com # update with your service principal name
