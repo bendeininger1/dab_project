@@ -12,6 +12,7 @@ resources:
               - "{{task.run_id}}"
               - "{{job.start_time.iso_datetime}}"
               - "${var.catalog}"
+          environment_key: Default
         - task_key: 02_silver_citibike
           depends_on:
             - task_key: 01_bronze_citibike
@@ -23,6 +24,7 @@ resources:
               - "{{task.run_id}}"
               - "{{job.start_time.iso_datetime}}"
               - "${var.catalog}"
+          environment_key: Default
           libraries:
             - whl: ../dist/*.whl
         - task_key: 03_gold_citibike_daily_ride_summary
@@ -32,6 +34,7 @@ resources:
             python_file: ../citibike_etl/scripts/03_gold/03_gold_citibike_daily_ride_summary.py
             parameters:
               - "${var.catalog}"
+          environment_key: Default
         - task_key: 03_gold_citibike_daily_station_performance
           depends_on:
             - task_key: 02_silver_citibike
@@ -39,6 +42,7 @@ resources:
             python_file: ../citibike_etl/scripts/03_gold/03_gold_citibike_daily_station_performance.py
             parameters:
               - "${var.catalog}"
+          environment_key: Default
       queue:
         enabled: true
       environments:
